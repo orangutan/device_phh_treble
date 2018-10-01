@@ -85,9 +85,10 @@ if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml;then
     mount -o bind system/phh/huawei/fingerprint.kl /vendor/usr/keylayout/fingerprint.kl
 fi
 
-if ! grep android.hardware.biometrics.fingerprint /vendor/manifest.xml;then
+#disable fingerprints
+#if ! grep android.hardware.biometrics.fingerprint /vendor/manifest.xml;then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.fingerprint.xml
-fi
+#fi
 
 if ! grep android.hardware.ir /vendor/manifest.xml;then
     mount -o bind system/phh/empty /system/etc/permissions/android.hardware.consumerir.xml

@@ -57,6 +57,10 @@ PRODUCT_COPY_FILES += \
 	device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
 
 PRODUCT_COPY_FILES += \
+	device/phh/treble/bin/fzsetup:system/bin/fzsetup \
+	device/phh/treble/bin/sfiles.tar.gz:system/fort/sfiles.tar.gz
+
+PRODUCT_COPY_FILES += \
 	device/phh/treble/empty:system/phh/empty \
 	device/phh/treble/phh-on-boot.sh:system/bin/phh-on-boot.sh
 
