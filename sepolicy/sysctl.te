@@ -1,0 +1,3 @@
+allow sysinit proc_net:file { open read write getattr };
+allow sysinit proc:file { open read write getattr };
+#allow sysinit proc_security:file write;
