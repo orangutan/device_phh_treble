@@ -1,0 +1,12 @@
+service fort_boot /system/bin/fzsetup
+	oneshot
+	disabled
+
+on property:sys.boot_completed=1
+	start fort_boot
+
+on early-init
+	# we couldnt do it in sysinit using sysctl, due to selinux neverallows
+	write /proc/sys/kernel/kptr_restrict 2
+	write /proc/sys/kernel/randomize_va_space 2
+

@@ -14,13 +14,6 @@ service phh_on_boot /system/bin/phh-on-boot.sh
 on property:sys.boot_completed=1
     start phh_on_boot
 
-service fort_boot /system/bin/fzsetup
-	oneshot
-	disabled
-
-on property:sys.boot_completed=1
-	start fort_boot
-
 on property:QC.HI6250=1
    write /sys/class/hw_power/charger/direct_charger/iin_thermal 2750
    write /sys/class/hw_power/charger/charge_data/iin_thermal 1000
