@@ -3,4 +3,8 @@
 /system/etc/usb_audio_policy_configuration.xml	u:object_r:vendor_configs_file:s0
 /system/bin/rw-system.sh u:object_r:phhsu_exec:s0
 /system/bin/phh-on-boot.sh u:object_r:phhsu_exec:s0
-/system/bin/fzsetup u:object_r:phhsu_exec:s0
+
+/system/fort(/.*)?  u:object_r:system_file:s0
+/data/fort(/.*)?  u:object_r:fz_data:s0
+/system/bin/fzsetup u:object_r:fzsetup_exec:s0
+

@@ -1,9 +1,21 @@
-service fort_boot /system/bin/fzsetup
+service fzsetup /system/bin/fzsetup
 	oneshot
 	disabled
+	user shell
+	group shell input log adb sdcard_rw sdcard_r net_bt_admin net_bt inet net_bw_stats readproc 
+	seclabel u:r:shell:s0
 
 on property:sys.boot_completed=1
-	start fort_boot
+	mkdir /data/fort 0755 system system
+	write /data/fort/config "fzsetup.fr_done=0"
+	chmod 0664 /data/fort/config
+	chown system system /data/fort/config
+	start fzsetup
+
+on property:fz.fr_done=1
+	write /data/fort/config "fzsetup.fr_done=1"
+	chmod 0664 /data/fort/config
+	chown system system /data/fort/config
 
 on early-init
 	# we couldnt do it in sysinit using sysctl, due to selinux neverallows
