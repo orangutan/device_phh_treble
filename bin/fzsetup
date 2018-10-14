@@ -4,55 +4,25 @@
 # change app settings.
 
 # factory reset detected
+
 if ! grep -q  "fzsetup.fr_done=1" /data/fort/config
 then
 	for i in /system/fort/*.apk
 	do
-		#while issues are there, debug them
-		if ! pm install "$i"
-		then
-			setprop fz.fail.$(basename $i .apk) $?
-		fi
+		pm install "$i"
 	done
-
-	#cd /data
-	#list=$(tar -xvzf /system/fort/sfiles.tar.gz)
-	##echo extracted files - $list
-	## we need to fix ownership for these
-	#for i in $(echo $list)
-	#do
-		# we probably need to do a restorecon on these files. see if we get selinux errors when opening the app.
-		# the context should be app_data_file
-
-		#dir1=$(dirname "$i")
-		#dir2=$(dirname "$dir1")
-		#ls -ld $dir2
-		#owner=$(ls -ld $dir2 | cut -f3 -d' ')
-		##echo owner=$owner
-		#grp=$(ls -ld $dir2 | cut -f4 -d' ')
-		##echo grp=$grp
-		#chown $owner:$grp "$dir2" "$i"
-		##ls -l "$i"
-		#restorecon "$i"
-	#done
 
 	# settings applicable for only factory reset, but not on each boot
 
 	#enable this later when dev is done
 	#settings put global adb_enabled 0
 	settings put global heads_up_notifications_enabled 0
-	# should we set it to 0(default)? or leave it at 2 (never)
-	#settings put global wifi_sleep_policy
 	settings put global wifi_networks_available_notification_on 0
 	settings put global network_recommendations_enabled 0
 	settings put global default_restrict_background_data 1
 	settings put global power_sounds_enabled 1
 
 	settings put secure install_non_market_apps 0
-
-	#doesnt do much yet, needs more config
-	settings put secure always_on_vpn_app com.protonvpn.android
-	settings put secure always_on_vpn_lockdown 1
 
 	settings put secure lock_screen_show_notifications 0
 	settings put secure mock_location 1
@@ -73,12 +43,13 @@ then
 	settings put --lineage system qs_quick_pulldown 1
 	settings put --lineage system volume_wake_screen 1
 
+	# set a prop, just in case.
 	setprop fz.fr_done 1
 fi
 
 # these settings are done on every reboot
 
-settings put --lineage stats_collection 0
+settings put --lineage global stats_collection 0
 settings put global bluetooth_on 0
 settings put global wifi_display_on 0
 settings put global add_users_when_locked 0
@@ -97,5 +68,4 @@ settings put --lineage secure privacy_guard_default 1
 settings put --lineage secure network_traffic_autohide 1
 settings put --lineage secure network_traffic_mode 3
 settings put --lineage secure network_traffic_show_units 1
-setprop fz.setup_done 1
 exit 0

@@ -1,39 +1,31 @@
-type fzsetup, domain;
+type fzsetup, domain, coredomain;
 type fzsetup_exec, exec_type, file_type;
-
-typeattribute fzsetup coredomain;
 
 # Allow for transition from init domain to fzsetup
 init_daemon_domain(fzsetup)
 
-type fz_data, file_type, data_file_type, core_data_file_type ;
+type fz_data, file_type, data_file_type;
 
 #allow setting properties
 set_prop(fzsetup, fz_prop);
 get_prop(fzsetup, fz_prop);
-allow { fzsetup init } fz_prop:property_service set;
+allow { fzsetup } fz_prop:property_service set;
 allow shell fz_prop:property_service set;
+
 allow shell fzsetup_exec:file { open read };
+allow shell fzsetup_exec:file { entrypoint };
 
 allow fzsetup fz_data:dir { open read search };
 allow fzsetup fz_data:file { getattr open read };
 allow shell fz_data:dir { open read search };
 allow shell fz_data:file { getattr open read };
 
-allow shell fzsetup_exec:file entrypoint;
-
-
 # needed for runcon and shell
-allow fzsetup self:process setexec;
 allow fzsetup shell:process { noatsecure rlimitinh siginh };
 allow fzsetup shell_exec:file { execute execute_no_trans getattr open read };
 
 allow shell fzsetup:fd use;
 allow shell fzsetup:process sigchld;
-allow shell idmap_exec:file { execute execute_no_trans getattr open read };
-allow shell overlay_prop:file { getattr open read };
-allow shell resourcecache_data_file:dir write;
-allow shell resourcecache_data_file:file { append setattr write };
 
 #commands come from toolbox
 allow fzsetup toolbox_exec:file { execute execute_no_trans getattr open read };
