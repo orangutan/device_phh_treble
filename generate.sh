@@ -41,7 +41,6 @@ for part in a ab;do
 				if [ "$apps" == "vanilla" ];then
 					apps_suffix="v"
 					apps_script=''
-					apps_name="vanilla"
 				fi
                 if [ "$arch" == "arm" ];then
                     vndk="vndk-binder32.mk"
@@ -69,9 +68,9 @@ $apps_script
 $rom_script
 
 PRODUCT_NAME := $target
-PRODUCT_DEVICE := phhgsi_${arch}_$part
-PRODUCT_BRAND := Android
-PRODUCT_MODEL := Phh-Treble $apps_name
+PRODUCT_DEVICE := FZgsi_${arch}_$part
+PRODUCT_BRAND := AOSP
+PRODUCT_MODEL := FZ-Treble $apps_name
 
 PRODUCT_PACKAGES += $extra_packages
 EOF

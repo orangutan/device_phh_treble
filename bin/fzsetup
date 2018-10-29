@@ -39,9 +39,6 @@ then
 	settings put --lineage system torch_long_press_power_gesture 1
 	settings put --lineage system volbtn_music_controls 1
 	settings put --lineage system volume_keys_control_ring_stream 0
-	settings put --lineage system enable_people_lookup 0
-	settings put --lineage system enable_forward_lookup 0
-	settings put --lineage system enable_reverse_lookup 0
 	settings put --lineage system forward_lookup_provider OpenStreetMap
 	settings put --lineage system qs_quick_pulldown 1
 	settings put --lineage system volume_wake_screen 1
