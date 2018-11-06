@@ -19,3 +19,6 @@ allow vndk_detect self:capability { sys_admin };
 #mount -o bind /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml
 allow init vendor_configs_file:file { getattr mounton };
 
+# for bt audio. vndk.rc mounts dir /vendor/etc/audio
+allow init vendor_configs_file:dir { getattr mounton };
+

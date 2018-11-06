@@ -79,6 +79,8 @@ set +e
 fixSPL
 set -e
 
+mkdir /mnt/phh/empty_dir
+
 changeKeylayout
 
 if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml;then
@@ -97,6 +99,30 @@ fi
 if getprop ro.hardware |grep -qF qcom && [ -f /sys/class/backlight/panel0-backlight/max_brightness ] && \
         grep -qvE '^255$' /sys/class/backlight/panel0-backlight/max_brightness;then
     setprop persist.sys.qcom-brightness $(cat /sys/class/backlight/panel0-backlight/max_brightness)
+fi
+
+# for pie
+if getprop ro.vendor.build.fingerprint |grep -q \
+	-e Xiaomi/beryllium/beryllium \
+	-e Xiaomi/sirius/sirius \
+	-e Xiaomi/dipper/dipper \
+	-e Xiaomi/ursa/ursa \
+	-e Xiaomi/polaris/polaris \
+	-e ali; then
+    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
+    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+fi
+
+# for oreo
+if getprop ro.vendor.product.device |grep -q \
+	-e Xiaomi/beryllium/beryllium \
+	-e Xiaomi/sirius/sirius \
+	-e Xiaomi/dipper/dipper \
+	-e Xiaomi/ursa/ursa \
+	-e Xiaomi/polaris/polaris \
+	-e ali; then
+    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
+    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
 fi
 
 if [ "$(getprop ro.vendor.product.device)" == "OnePlus6" ];then
