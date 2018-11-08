@@ -108,21 +108,22 @@ if getprop ro.vendor.build.fingerprint |grep -q \
 	-e Xiaomi/dipper/dipper \
 	-e Xiaomi/ursa/ursa \
 	-e Xiaomi/polaris/polaris \
-	-e ali; then
-    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
-    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+	-e motorola/ali/ali; then
+    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx || true
+    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx || true
 fi
 
 # for oreo
-if getprop ro.vendor.product.device |grep -q \
-	-e Xiaomi/beryllium/beryllium \
-	-e Xiaomi/sirius/sirius \
-	-e Xiaomi/dipper/dipper \
-	-e Xiaomi/ursa/ursa \
-	-e Xiaomi/polaris/polaris \
-	-e ali; then
-    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
-    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+devname=$(getprop ro.vendor.product.device)
+if test "$devname" = "beryllium" -o \
+	"$devname" = "sirius" -o \
+	"$devname" = "dipper" -o \
+	"$devname" = "ursa" -o \
+	"$devname" = "polaris" -o \
+	"$devname" = "ali"
+then
+    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx || true
+    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx || true
 fi
 
 if [ "$(getprop ro.vendor.product.device)" == "OnePlus6" ];then
