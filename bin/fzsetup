@@ -9,7 +9,7 @@ if ! grep -q  "fzsetup.fr_done=1" /data/fort/config
 then
 	for i in /system/fort/*.apk
 	do
-		pm install "$i"
+		pm install "$i" || true
 	done
 
 	# settings applicable for only factory reset, but not on each boot
