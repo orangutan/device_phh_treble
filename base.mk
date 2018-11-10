@@ -58,8 +58,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/bin/fzsetup:system/bin/fzsetup \
-	device/phh/treble/fz.rc:system/etc/init/fz.rc \
-	device/phh/treble/bin/sfiles.tar.gz:system/fort/sfiles.tar.gz
+	device/phh/treble/fz.rc:system/etc/init/fz.rc
 
 PRODUCT_COPY_FILES += \
 	device/phh/treble/empty:system/phh/empty \
