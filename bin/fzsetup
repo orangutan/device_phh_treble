@@ -34,10 +34,6 @@ then
 	settings put system vibrate_when_ringing 1
 	settings put system lockscreen_sounds_enabled 1
 	
-	adb shell settings put system window_animation_scale 0
-	adb shell settings put system transition_animation_scale 0
-	adb shell settings put system animator_duration_scale 0
-
 	settings put --lineage system lockscreen_scramble_pin_layout 1
 	settings put --lineage system navigation_bar_menu_arrow_keys 1
 	settings put --lineage system torch_long_press_power_gesture 1
