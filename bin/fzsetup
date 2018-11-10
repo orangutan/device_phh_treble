@@ -52,7 +52,7 @@ then
 	settings put --lineage secure stats_collection 0
 	settings put --lineage secure lock_screen_pass_to_security_view 1
 
-	svc disable nfc || true
+	svc nfc disable || true
 
 	setprop fz.fr_done 1
 fi
