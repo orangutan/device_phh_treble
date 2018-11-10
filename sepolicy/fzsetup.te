@@ -3,6 +3,7 @@ type fzsetup_exec, exec_type, file_type;
 
 # Allow for transition from init domain to fzsetup
 init_daemon_domain(fzsetup)
+allow init su:process transition;
 
 type fz_data, file_type, data_file_type;
 
@@ -39,4 +40,7 @@ allow servicemanager fzsetup:binder { call transfer };
 allow fzsetup init:unix_stream_socket connectto;
 allow fzsetup system_file:file { execute_no_trans lock };
 allow fzsetup system_file:dir { open read };
+
+#allow logcat use
+allow logd unlabeled:dir search;
 

@@ -3,8 +3,10 @@
 # change system settings for security.
 # change app settings.
 
-# factory reset detected
+# dont exit on errors
+set +e
 
+# factory reset detected
 if ! grep -q  "fzsetup.fr_done=1" /data/fort/config
 then
 	for i in /system/fort/*.apk
@@ -31,9 +33,11 @@ then
 	settings put system show_password 0
 	settings put system vibrate_when_ringing 1
 	settings put system lockscreen_sounds_enabled 1
-	settings put system status_bar_show_battery_percent 1
-	settings put system lockscreen_sounds_enabled 1
 	
+	adb shell settings put system window_animation_scale 0
+	adb shell settings put system transition_animation_scale 0
+	adb shell settings put system animator_duration_scale 0
+
 	settings put --lineage system lockscreen_scramble_pin_layout 1
 	settings put --lineage system navigation_bar_menu_arrow_keys 1
 	settings put --lineage system torch_long_press_power_gesture 1
@@ -42,19 +46,26 @@ then
 	settings put --lineage system forward_lookup_provider OpenStreetMap
 	settings put --lineage system qs_quick_pulldown 1
 	settings put --lineage system volume_wake_screen 1
+	settings put --lineage system status_bar_am_pm 1
+	settings put --lineage system status_bar_battery_style 5
+	settings put --lineage system status_bar_show_battery_percent 2
+	settings put --lineage global wake_when_plugged_or_unplugged 1
+	settings put --lineage global power_notifications_enabled 1
 
-	# set a prop, just in case.
+	settings put --lineage secure privacy_guard_notification 1
+	settings put --lineage secure stats_collection 0
+	settings put --lineage secure lock_screen_pass_to_security_view 1
+
+	svc disable nfc || true
+
 	setprop fz.fr_done 1
 fi
 
 # these settings are done on every reboot
 
-settings put --lineage global stats_collection 0
 settings put global bluetooth_on 0
 settings put global wifi_display_on 0
 settings put global add_users_when_locked 0
-#enable this later when dev is done
-#settings put global adb_enabled 0
 settings put global wifi_wakeup_available 0
 settings put global wifi_scan_always_enabled 0
 settings put global package_verifier_enable 1
@@ -63,6 +74,7 @@ settings put global assisted_gps_enabled 0
 settings put secure lock_screen_allow_private_notifications 0
 settings put secure lock_screen_owner_info_enabled 0
 settings put secure disabled_print_services com.android.bips/.BuiltInPrintService
+
 settings put --lineage secure privacy_guard_default 1
 
 settings put --lineage secure network_traffic_autohide 1
