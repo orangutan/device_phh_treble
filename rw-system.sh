@@ -65,6 +65,13 @@ changeKeylayout() {
     fi
 }
 
+# fix BT audio
+fixBTAudio()
+{
+    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx || true
+    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx || true
+}
+
 if mount -o remount,rw /system;then
 	resize2fs $(grep ' /system ' /proc/mounts |cut -d ' ' -f 1) || true
 elif mount -o remount,rw /;then
@@ -109,8 +116,7 @@ if getprop ro.vendor.build.fingerprint |grep -q \
 	-e Xiaomi/ursa/ursa \
 	-e Xiaomi/polaris/polaris \
 	-e motorola/ali/ali; then
-    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx || true
-    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx || true
+	fixBTAudio
 fi
 
 # for oreo
@@ -122,8 +128,7 @@ if test "$devname" = "beryllium" -o \
 	"$devname" = "polaris" -o \
 	"$devname" = "ali"
 then
-    mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx || true
-    mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx || true
+	fixBTAudio
 fi
 
 if [ "$(getprop ro.vendor.product.device)" == "OnePlus6" ];then
