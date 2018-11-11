@@ -3,16 +3,19 @@
 # change system settings for security.
 # change app settings.
 
-# dont exit on errors
 set +e
 
 # factory reset detected
 if ! grep -q  "fzsetup.fr_done=1" /data/fort/config
 then
-	for i in /system/fort/*.apk
+	cd /system/fort
+	for i in *.apk
 	do
-		pm install "$i" || true
+		msg=$(pm install ./$i 2>&1)
+		ret=$?
+		log -pd -t fz "app $i installation: return = $ret, msg = $msg"
 	done
+	cd -
 
 	# settings applicable for only factory reset, but not on each boot
 
