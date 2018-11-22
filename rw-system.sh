@@ -72,14 +72,21 @@ fixBTAudio()
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx || true
 }
 
-# if there are junk apps, those can be gotten rid of
+# get rid of junk apps
 override_oem_apps()
 {
-    mount -o bind /mnt/phh/empty_dir /oem/app/LinkedIn || true
-    mount -o bind /mnt/phh/empty_dir /oem/app/FileBrowser2 || true
-    mount -o bind /mnt/phh/empty_dir /oem/app/Republic || true
-    mount -o bind /mnt/phh/empty_dir /oem/app/Tycho-oem || true
-    mount -o bind /mnt/phh/empty_dir /oem/app/OmegaPttMX || true
+    for i in \
+        /oem/app/LinkedIn \
+        /oem/app/FileBrowser2 \
+        /oem/app/Republic \
+        /oem/app/Tycho-oem \
+        /oem/app/OmegaPttMX
+    do
+        if test -d $i
+        then
+    	    mount -o bind /mnt/phh/empty_dir $i || true
+        fi
+    done
 }
 
 if mount -o remount,rw /system;then
@@ -129,11 +136,6 @@ if getprop ro.vendor.build.fingerprint |grep -q \
 	fixBTAudio
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q \
-	-e motorola/ali/ali
-	then
-	override_oem_apps
-fi
 # for oreo
 devname=$(getprop ro.vendor.product.device)
 if test "$devname" = "beryllium" -o \
@@ -146,10 +148,8 @@ then
 	fixBTAudio
 fi
 
-if test "$devname" = "ali"
-then
-	override_oem_apps
-fi
+override_oem_apps
+
 if [ "$(getprop ro.vendor.product.device)" == "OnePlus6" ];then
 	resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
 fi

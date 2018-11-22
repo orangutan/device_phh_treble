@@ -9,12 +9,32 @@ set +e
 if ! grep -q  "fzsetup.fr_done=1" /data/fort/config
 then
 	cd /system/fort
-	for i in *.apk
+	list=$(ls -1 | grep -v VLC)
+	for i in $list
 	do
 		msg=$(pm install ./$i 2>&1)
 		ret=$?
 		log -pd -t fz "app $i installation: return = $ret, msg = $msg"
 	done
+
+	#device specific apps
+	arch=$(uname -m)
+	if echo $arch | grep -q armv7
+	then
+		pm install VLC*ARMv7.apk
+	elif echo $arch | grep -q aarch64
+	then
+		pm install VLC*ARMv8.apk
+	elif echo $arch | grep -q x86_64
+	then
+		pm install VLC*x86_64.apk
+	elif echo $arch | grep -q x86
+	then
+		pm install VLC*x86.apk
+	else
+		log -pd -t fz "could not install device specific apps, unknown architecture $arch"
+	fi
+
 	cd -
 
 	# settings applicable for only factory reset, but not on each boot
