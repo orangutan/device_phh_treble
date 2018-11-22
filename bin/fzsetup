@@ -28,7 +28,7 @@ then
 	elif echo $arch | grep -q x86_64
 	then
 		pm install VLC*x86_64.apk
-	elif echo $arch | grep -q x86
+	elif echo $arch | egrep -q "x86|i386"
 	then
 		pm install VLC*x86.apk
 	else
