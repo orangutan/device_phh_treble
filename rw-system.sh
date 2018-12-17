@@ -18,7 +18,13 @@ fixSPL() {
         setprop ro.keymaster.xxx.release "$Arelease"
         setprop ro.keymaster.xxx.security_patch "$(getSPL $img spl)"
 
-        for f in /vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so /system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed /system/lib64/vndk/libsoftkeymasterdevice.so /system/lib/vndk/libsoftkeymasterdevice.so /system/lib/vndk-26/libsoftkeymasterdevice.so;do
+        for f in \
+		/vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so \
+		/system/lib64/vndk-26/libsoftkeymasterdevice.so /vendor/bin/teed \
+		/system/lib64/vndk/libsoftkeymasterdevice.so /system/lib/vndk/libsoftkeymasterdevice.so \
+		/system/lib/vndk-26/libsoftkeymasterdevice.so \
+		/system/lib/vndk-27/libsoftkeymasterdevice.so /system/lib64/vndk-27/libsoftkeymasterdevice.so \
+		;do
             [ ! -f $f ] && continue
             ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
             b="$(echo "$f"|tr / _)"
@@ -54,16 +60,30 @@ changeKeylayout() {
         chmod 0644 /mnt/phh/keylayout/gpio_keys.kl /mnt/phh/keylayout/sec_touchscreen.kl
     fi
 
-    if getprop ro.vendor.build.fingerprint |grep -iq -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper;then
+    if getprop ro.vendor.build.fingerprint |grep -iq -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout -e xiaomi/platina -e iaomi/perseus;then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
+        cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
+        chmod 0644 /mnt/phh/keylayout/uinput-fpc.kl
         changed=true
     fi
 
-    if [ "$(getprop ro.vendor.product.device)" == "OnePlus6" ];then
+    if getprop ro.vendor.build.fingerprint |grep -qi oneplus/oneplus6/oneplus6;then
         cp /system/phh/oneplus6-synaptics_s3320.kl /mnt/phh/keylayout/synaptics_s3320.kl
         chmod 0644 /mnt/phh/keylayout/synaptics_s3320.kl
         changed=true
+    fi
+
+    if getprop ro.vendor.build.fingerprint |grep -iq -e iaomi/perseus;then
+        cp /system/phh/mimix3-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
+        chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
+        changed=true
+    fi
+
+    if getprop ro.vendor.build.fingerprint |grep -iq -E -e '^Sony/G834';then
+	cp /system/phh/sony-gpio-keys.kl /mnt/phh/keylayout/gpio-keys.kl
+	chmod 0644 /mnt/phh/keylayout/gpio-keys.kl
+	changed=true
     fi
 
     if [ "$changed" == true ];then
@@ -87,6 +107,7 @@ fixSPL
 
 changeKeylayout
 
+
 if grep vendor.huawei.hardware.biometrics.fingerprint /vendor/manifest.xml;then
     mount -o bind system/phh/huawei/fingerprint.kl /vendor/usr/keylayout/fingerprint.kl
 fi
@@ -100,7 +121,12 @@ if getprop ro.hardware |grep -qF qcom && [ -f /sys/class/backlight/panel0-backli
     setprop persist.sys.qcom-brightness $(cat /sys/class/backlight/panel0-backlight/max_brightness)
 fi
 
-if [ "$(getprop ro.vendor.product.device)" == "OnePlus6" ];then
+#Sony don't use Qualcomm HAL, so they don't have their mess
+if getprop ro.vendor.build.fingerprint |grep -qE 'Sony/';then
+    setprop persist.sys.qcom-brightness -1
+fi
+
+if getprop ro.vendor.build.fingerprint |grep -qi oneplus/oneplus6/oneplus6;then
 	resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
 fi
 
@@ -121,16 +147,26 @@ if grep -qF 'mkdir /data/.fps 0770 system fingerp' vendor/etc/init/hw/init.mmi.r
     chown system:9015 /sys/devices/soc/soc:fpc_fpc1020/irq_cnt
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q -e Xiaomi/clover/clover -e iaomi/wayne/wayne;then
+if getprop ro.vendor.build.fingerprint |grep -q -i -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina;then
     setprop persist.sys.qcom-brightness $(cat /sys/class/leds/lcd-backlight/max_brightness)
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q -e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius -e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris;then
+if getprop ro.vendor.build.fingerprint |grep -q \
+	-e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius \
+	-e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris \
+	-e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina ;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
 fi
 
-for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so;do
+if getprop ro.vendor.build.fingerprint |grep -q -i -e xiaomi/wayne -e xiaomi/jasmine;then
+    setprop persist.imx376_sunny.low.lux 310
+    setprop persist.imx376_sunny.light.lux 280
+    setprop persist.imx376_ofilm.low.lux 310
+    setprop persist.imx376_ofilm.light.lux 280
+fi
+
+for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.so /vendor/lib64/libmtk-ril.so;do
     [ ! -f $f ] && continue
     ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
     b="$(echo "$f"|tr / _)"
@@ -144,8 +180,12 @@ for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so;do
 done
 
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkTheme.apk || true
+mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkThemeOverlay.apk || true
 
-if grep -qF 'PowerVR Rogue GE8100' /vendor/lib/egl/GLESv1_CM_mtk.so;then
+if grep -qF 'PowerVR Rogue GE8100' /vendor/lib/egl/GLESv1_CM_mtk.so || \
+	grep -qF 'PowerVR Rogue' /vendor/lib/egl/libGLESv1_CM_mtk.so || \
+	(getprop ro.product.board | grep -qE -e msm8917 -e msm8937 -e msm8940);then
+
 	setprop debug.hwui.renderer opengl
 fi
 
@@ -161,3 +201,28 @@ fi
 if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex |grep -qF -e Landroid/telephony/ims/feature/MmTelFeature -e Landroid/telephony/ims/feature/MMTelFeature;then
     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
 fi
+
+if getprop ro.hardware |grep -qF samsungexynos;then
+	setprop debug.sf.latch_unsignaled 1
+fi
+
+if getprop ro.product.model |grep -qF ANE;then
+	setprop debug.sf.latch_unsignaled 1
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*"  -e ".*(SC-0[23]K|SCV3[89]).*";then
+	for f in /vendor/lib/libfloatingfeature.so /vendor/lib64/libfloatingfeature.so;do
+		[ ! -f $f ] && continue
+		ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
+		b="$(echo "$f"|tr / _)"
+
+		cp -a $f /mnt/phh/$b
+		sed -i \
+			-e 's;/system/etc/floating_feature.xml;/system/ph/sam-9810-flo_feat.xml;g' \
+			/mnt/phh/$b
+		chcon "$ctxt" /mnt/phh/$b
+		mount -o bind /mnt/phh/$b $f
+	done
+fi
+
+mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true

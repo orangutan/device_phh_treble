@@ -9,10 +9,17 @@ while read version;do
 	setprop persist.sys.vndk $version
 done
 
-mount -o bind /system/bin/adbd /sbin/adbd
+if [ -d /sys/module/five ];then
+	mount -o bind /system/phh/empty /sbin/adbd
+	setprop sys.phh.five true
+else
+	mount -o bind /system/bin/adbd /sbin/adbd
+fi
 if ( getprop ro.hardware | grep -qE '(kirin970|hi3660|hi6250|hi3670)' );then
 	FOUND_HUAWEI=1
 	setprop persist.sys.bt_acl_bypass true
+	setprop persist.sys.camera.huawei true
+	setprop persist.sys.radio.huawei true
 fi
 
 if getprop ro.vendor.build.fingerprint |grep -qiE '(huawei|honor|hi3660)' || [ -n "$FOUND_HUAWEI" ];then
@@ -24,15 +31,8 @@ if [ -n "$FOUND_HUAWEI" ];then
 	setprop debug.hwui.profile true
 fi
 
-if getprop ro.hardware |grep -qiE qcom;then
+if getprop ro.hardware |grep -qiE -e qcom -e judyln;then
 	FOUND_QCOM=1
 	setprop persist.sys.overlay.devinputjack true
 fi
 
-if ( getprop ro.hardware | grep -qE '(hi6250)' );then
-	setprop QC.HI6250 1
-fi
-
-if ( getprop ro.hardware | grep -qE '(hi3660|hi3670|kirin970)' );then
-	setprop QC.HI36x0 1
-fi
