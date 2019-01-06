@@ -1,5 +1,10 @@
 #!/system/bin/sh
 
+#Uncomment me to output sh -x of this script to /cache/phh/logs
+#if [ -z "$debug" ];then
+#	mkdir -p /cache/phh
+#	debug=1 exec sh -x "$(readlink -f -- "$0")" > /cache/phh/logs 2>&1
+#fi
 
 vndk="$(getprop persist.sys.vndk)"
 setprop sys.usb.ffs.aio_compat true
@@ -161,9 +166,16 @@ if getprop ro.vendor.build.fingerprint |grep -q \
 	-e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius \
 	-e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris \
 	-e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
-	-e iaomi/equuleus/equuleus;then
+	-e iaomi/equuleus/equuleus -e motorola/nora;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+fi
+
+if [ "$(getprop ro.vendor.product.manufacturer)" == "motorola" ];then
+    if getprop ro.vendor.product.device |grep -q -e nora -e ali;then
+        mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
+        mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
+    fi
 fi
 
 if getprop ro.vendor.build.fingerprint |grep -q -i -e xiaomi/wayne -e xiaomi/jasmine;then
@@ -230,6 +242,12 @@ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" 
 		chcon "$ctxt" /mnt/phh/$b
 		mount -o bind /mnt/phh/$b $f
 	done
+fi
+
+if getprop ro.hardware |grep -q samsungexynos7870;then
+	if [ "$vndk" -le 27 ];then
+		setprop persist.sys.phh.sdk_override /vendor/bin/hw/rild=27
+	fi
 fi
 
 mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
