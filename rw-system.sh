@@ -175,7 +175,7 @@ if getprop ro.vendor.build.fingerprint |grep -q -e Xiaomi/clover/clover -e iaomi
     setprop persist.sys.qcom-brightness $(cat /sys/class/leds/lcd-backlight/max_brightness)
 fi
 
-for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so;do
+for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.so /vendor/lib64/libmtk-ril.so;do
     [ ! -f $f ] && continue
     ctxt="$(ls -lZ $f |grep -oE 'u:object_r:[^:]*:s0')"
     b="$(echo "$f"|tr / _)"
@@ -189,3 +189,9 @@ for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so;do
 done
 
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkTheme.apk || true
+mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkThemeOverlay.apk || true
+
+#If we have both Samsung and AOSP power hal, take Samsung's
+if [ -f /vendor/bin/hw/vendor.samsung.hardware.miscpower@1.0-service ];then
+	mount -o bind /system/phh/empty /vendor/bin/hw/android.hardware.power@1.0-service
+fi
