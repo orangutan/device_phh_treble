@@ -68,7 +68,8 @@ changeKeylayout() {
     if getprop ro.vendor.build.fingerprint |grep -iq \
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
-        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl;then
+        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
+        -e xiaomi/nitrogen;then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
         cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
@@ -162,17 +163,18 @@ if getprop ro.vendor.build.fingerprint |grep -q -i \
     setprop persist.sys.qcom-brightness $(cat /sys/class/leds/lcd-backlight/max_brightness)
 fi
 
-if getprop ro.vendor.build.fingerprint |grep -q \
+if getprop ro.vendor.build.fingerprint |grep -iq \
 	-e Xiaomi/beryllium/beryllium -e Xiaomi/sirius/sirius \
 	-e Xiaomi/dipper/dipper -e Xiaomi/ursa/ursa -e Xiaomi/polaris/polaris \
 	-e motorola/ali/ali -e iaomi/perseus/perseus -e iaomi/platina/platina \
-	-e iaomi/equuleus/equuleus -e motorola/nora;then
+	-e iaomi/equuleus/equuleus -e motorola/nora -e xiaomi/nitrogen \
+	-e motorola/hannah;then
     mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
     mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
 fi
 
 if [ "$(getprop ro.vendor.product.manufacturer)" == "motorola" ];then
-    if getprop ro.vendor.product.device |grep -q -e nora -e ali;then
+    if getprop ro.vendor.product.device |grep -q -e nora -e ali -e hannah;then
         mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
         mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     fi
