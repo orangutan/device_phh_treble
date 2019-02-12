@@ -70,7 +70,7 @@ changeKeylayout() {
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
-        -e xiaomi/nitrogen;then
+        -e xiaomi/nitrogen -e xiaomi/daisy;then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
         cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
@@ -206,7 +206,7 @@ mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkThemeOve
 
 if grep -qF 'PowerVR Rogue GE8100' /vendor/lib/egl/GLESv1_CM_mtk.so || \
 	grep -qF 'PowerVR Rogue' /vendor/lib/egl/libGLESv1_CM_mtk.so || \
-	(getprop ro.product.board | grep -qE -e msm8917 -e msm8937 -e msm8940);then
+	(getprop ro.product.board | grep -qiE -e msm8917 -e msm8937 -e msm8940);then
 
 	setprop debug.hwui.renderer opengl
 fi
@@ -259,7 +259,6 @@ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" 
 	done
 fi
 
-
 if getprop ro.vendor.build.fingerprint |grep -qiE '^samsung';then
 	if getprop ro.hardware |grep -q qcom;then
 		setprop persist.sys.overlay.devinputjack false
@@ -270,6 +269,11 @@ if getprop ro.vendor.build.fingerprint |grep -qiE '^samsung';then
 			setprop persist.sys.phh.sdk_override /vendor/bin/hw/rild=27
 		fi
 	fi
+fi
+
+if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/daisy/daisy_sprout:8.1.0/OPM.*'; then
+	setprop setprop audio.camerasound.force true
+	# Fix camera on DND, ugly workaround but meh
 fi
 
 mount -o bind /mnt/phh/empty_dir /vendor/etc/audio || true
