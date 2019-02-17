@@ -70,7 +70,7 @@ changeKeylayout() {
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
-        -e xiaomi/nitrogen -e xiaomi/daisy;then
+        -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura;then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
         cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
@@ -175,7 +175,7 @@ if getprop ro.vendor.build.fingerprint |grep -iq \
 fi
 
 if [ "$(getprop ro.vendor.product.manufacturer)" == "motorola" ];then
-    if getprop ro.vendor.product.device |grep -q -e nora -e ali -e hannah;then
+    if getprop ro.vendor.product.device |grep -q -e nora -e ali -e hannah -e evert -e jeter;then
         mount -o bind /mnt/phh/empty_dir /vendor/lib64/soundfx
         mount -o bind /mnt/phh/empty_dir /vendor/lib/soundfx
     fi
@@ -272,7 +272,7 @@ if getprop ro.vendor.build.fingerprint |grep -qiE '^samsung';then
 fi
 
 if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/daisy/daisy_sprout:8.1.0/OPM.*'; then
-	setprop setprop audio.camerasound.force true
+	setprop audio.camerasound.force true
 	# Fix camera on DND, ugly workaround but meh
 fi
 
