@@ -159,7 +159,7 @@ fi
 if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
-    -e xiaomi/ysl; then
+    -e xiaomi/ysl -e nubia/nx60; then
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
@@ -178,7 +178,7 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
 fi
 
 if [ "$(getprop ro.vendor.product.manufacturer)" = "motorola" ] || [ "$(getprop ro.product.vendor.manufacturer)" = "motorola" ]; then
-    if getprop ro.vendor.product.device | grep -q -e nora -e ali -e hannah -e evert -e jeter -e deen -e james -e pettyl; then
+    if getprop ro.vendor.product.device | grep -q -e nora -e ali -e hannah -e evert -e jeter -e deen -e james -e pettyl -e jater; then
         if [ "$vndk" -ge 28 ]; then
             f="/vendor/lib/libeffects.so"
             # shellcheck disable=SC2010
@@ -278,7 +278,14 @@ if getprop ro.vendor.build.fingerprint | grep -qE -e ".*(crown|star)[q2]*lte.*" 
             "/mnt/phh/$b"
         chcon "$ctxt" "/mnt/phh/$b"
         mount -o bind "/mnt/phh/$b" "$f"
+
+	setprop ro.audio.monitorRotation true
     done
+fi
+
+# This matches both Razer Phone 1 & 2
+if getprop ro.vendor.build.fingerprint |grep -qE razer/cheryl;then
+	setprop ro.audio.monitorRotation true
 fi
 
 if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung'; then
@@ -293,7 +300,7 @@ if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung'; then
     fi
 fi
 
-if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/daisy/daisy_sprout:8.1.0/OPM.*'; then
+if getprop ro.vendor.build.fingerprint | grep -qE '^xiaomi/(daisy|wayne)/(daisy|wayne).*'; then
     # Fix camera on DND, ugly workaround but meh
     setprop audio.camerasound.force true
 fi
