@@ -70,7 +70,8 @@ changeKeylayout() {
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
-        -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura; then
+        -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
+        -e xiaomi/whyred; then
         cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
         chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
         cp /system/phh/empty /mnt/phh/keylayout/uinput-fpc.kl
@@ -203,6 +204,7 @@ if getprop ro.vendor.build.fingerprint | grep -q -i -e xiaomi/wayne -e xiaomi/ja
     setprop persist.imx376_sunny.light.lux 280
     setprop persist.imx376_ofilm.low.lux 310
     setprop persist.imx376_ofilm.light.lux 280
+    echo "none" > /sys/class/leds/led:torch_2/trigger
 fi
 
 for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.so /vendor/lib64/libmtk-ril.so; do
