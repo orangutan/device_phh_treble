@@ -228,6 +228,12 @@ fi
 
 for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.so /vendor/lib64/libmtk-ril.so; do
     [ ! -f $f ] && continue
+
+    setprop persist.sys.phh.radio.force_cognitive true
+    setprop persist.sys.radio.ussd.fix true
+
+    if getprop persist.sys.mtk.disable.incoming.fix | grep -q 1; then break; fi
+
     # shellcheck disable=SC2010
     ctxt="$(ls -lZ "$f" | grep -oE 'u:object_r:[^:]*:s0')"
     b="$(echo "$f" | tr / _)"
@@ -238,9 +244,6 @@ for f in /vendor/lib/mtk-ril.so /vendor/lib64/mtk-ril.so /vendor/lib/libmtk-ril.
         "/mnt/phh/$b"
     chcon "$ctxt" "/mnt/phh/$b"
     mount -o bind "/mnt/phh/$b" "$f"
-
-    setprop persist.sys.phh.radio.force_cognitive true
-    setprop persist.sys.radio.ussd.fix true
 done
 
 mount -o bind /system/phh/empty /vendor/overlay/SysuiDarkTheme/SysuiDarkTheme.apk || true
@@ -266,11 +269,11 @@ if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex | grep -qF -e Landro
     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
 fi
 
-if getprop ro.hardware | grep -qF samsungexynos; then
+if getprop ro.hardware | grep -qF samsungexynos -e mt6771; then
     setprop debug.sf.latch_unsignaled 1
 fi
 
-if getprop ro.product.model | grep -qF ANE; then
+if getprop ro.product.model | grep -qF -e ANE; then
     setprop debug.sf.latch_unsignaled 1
 fi
 
@@ -349,7 +352,7 @@ if [ -n "$(getprop ro.boot.product.hardware.sku)" ] && [ -z "$(getprop ro.hw.oem
 fi
 
 if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 28 ];then
-	setprop persist.sys.phh.samsung_fingerprint -1
+	setprop persist.sys.phh.samsung_fingerprint 0
 	#obviously broken perms
 	if [ "$(stat -c '%A' /sys/class/sec/tsp/ear_detect_enable)" == "-rw-rw-r--" ] &&
 		[ "$(stat -c '%U' /sys/class/sec/tsp/ear_detect_enable)" == "root" ] &&
