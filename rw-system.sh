@@ -72,7 +72,7 @@ changeKeylayout() {
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
         -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
         -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
-        -e xiaomi/whyred -e xiaomi/tulip; then
+        -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
           cp /system/phh/empty /mnt/phh/keylayout/uinput-goodix.kl
           chmod 0644 /mnt/phh/keylayout/uinput-goodix.kl
@@ -291,6 +291,10 @@ if getprop ro.product.model | grep -qF -e ANE; then
     setprop debug.sf.latch_unsignaled 1
 fi
 
+if getprop ro.vendor.product.device | grep -q -e nora -e rhannah; then
+    setprop debug.sf.latch_unsignaled 1
+fi
+
 if getprop ro.vendor.build.fingerprint | grep -iq -E -e 'huawei|honor' || getprop persist.sys.overlay.huawei | grep -iq -E -e 'true'; then
     p=/product/etc/nfc/libnfc_nxp_*_*.conf
     mount -o bind "$p" /system/etc/libnfc-nxp.conf ||
@@ -464,9 +468,12 @@ if [ "$has_hostapd" = false ];then
 fi
 
 #Weird /odm/phone.prop Huawei stuff
-if [ -f /odm/phone.prop ];then
-    HW_PRODID="$(sed -nE 's/.*productid=([0-9x]*).*/\1/p' /proc/cmdline)"
-    if [ -n "$HW_PRODID" ];then
-        eval "$(awk 'BEGIN { a=0 }; /\[.*\].*/ { a=0 }; tolower($0) ~ /.*0x39606014.*/ { a=1 }; /.*=.*/ { if(a == 1) print $0 }' /odm/phone.prop |sed -nE 's/(.*)=(.*)/setprop \1 "\2";/p')"
+HW_PRODID="$(sed -nE 's/.*productid=([0-9xa-f]*).*/\1/p' /proc/cmdline)"
+[ -z "$HW_PRODID" ] && HW_PRODID="0x$(od -A none -t x1 /sys/firmware/devicetree/base/hisi,modem_id | sed s/' '//g)"
+for part in odm vendor;do
+    if [ -f /$part/phone.prop ];then
+        if [ -n "$HW_PRODID" ];then
+            eval "$(awk 'BEGIN { a=0 }; /\[.*\].*/ { a=0 }; tolower($0) ~ /.*'"$HW_PRODID"'.*/ { a=1 }; /.*=.*/ { if(a == 1) print $0 }' /$part/phone.prop |sed -nE 's/(.*)=(.*)/setprop \1 "\2";/p')"
+        fi
     fi
-fi
+done
