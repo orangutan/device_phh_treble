@@ -70,7 +70,7 @@ changeKeylayout() {
     if getprop ro.vendor.build.fingerprint | grep -iq \
         -e xiaomi/polaris -e xiaomi/sirius -e xiaomi/dipper \
         -e xiaomi/wayne -e xiaomi/jasmine -e xiaomi/jasmine_sprout \
-        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl \
+        -e xiaomi/platina -e iaomi/perseus -e xiaomi/ysl -e Redmi/begonia\
         -e xiaomi/nitrogen -e xiaomi/daisy -e xiaomi/sakura \
         -e xiaomi/whyred -e xiaomi/tulip -e xiaomi/onc; then
         if [ ! -f /mnt/phh/keylayout/uinput-goodix.kl ]; then
@@ -190,7 +190,7 @@ if getprop ro.vendor.build.fingerprint | grep -q -i \
     -e xiaomi/clover -e xiaomi/wayne -e xiaomi/sakura \
     -e xiaomi/nitrogen -e xiaomi/whyred -e xiaomi/platina \
     -e xiaomi/ysl -e nubia/nx60 -e nubia/nx61 -e xiaomi/tulip \
-    -e xiaomi/lavender -e xiaomi/olivelite -e xiaomi/pine; then
+    -e xiaomi/lavender -e xiaomi/olivelite -e xiaomi/pine -e Redmi/begonia; then
     setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
 fi
 
@@ -283,7 +283,7 @@ if busybox_phh unzip -p /vendor/app/ims/ims.apk classes.dex | grep -qF -e Landro
     mount -o bind /system/phh/empty /vendor/app/ims/ims.apk
 fi
 
-if getprop ro.hardware | grep -qF samsungexynos -e mt6771; then
+if getprop ro.hardware | grep -qF samsungexynos -e mt6771 -e exynos; then
     setprop debug.sf.latch_unsignaled 1
 fi
 
@@ -448,13 +448,6 @@ if [ -c /dev/dsm ];then
     chcon u:object_r:teecd_data_file_system:s0 /data/sec_storage_data
     mount /data/sec_storage_data /sec_storage
 fi
-
-#Try to detect DT2W
-for ev in $(cd /sys/class/input;echo event*);do
-	if [ -f "/sys/class/input/$ev/device/device/gesture_mask" ];then
-		setprop persist.sys.phh.dt2w_evnode /dev/input/$ev
-	fi
-done
 
 has_hostapd=false
 for i in odm oem vendor product;do
